@@ -90,14 +90,17 @@ export function AssetUploader() {
 
       const exists = await checkCompanyExists(data.companyId);
       
-      setDialogConfig({
-        title: exists ? 'Update Company Assets' : 'Create New Company',
-        description: exists 
-          ? `Company ID "${data.companyId}" already exists. Do you want to update its assets?`
-          : `Company ID "${data.companyId}" does not exist. Do you want to create it?`,
-        action: () => handleUpload(data, exists),
-      });
-      setDialogOpen(true);
+      if (exists) {
+        setDialogConfig({
+          title: 'Update Company Assets',
+          description: `Company ID "${data.companyId}" already exists. Do you want to update its assets?`,
+          action: () => handleUpload(data, true),
+        });
+        setDialogOpen(true);
+      } else {
+        // For new companies, upload directly
+        await handleUpload(data, false);
+      }
     } catch (err) {
       toast({
         variant: "destructive",
