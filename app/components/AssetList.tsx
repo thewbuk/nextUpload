@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import type { Asset } from '@/app/types/asset';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
