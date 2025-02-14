@@ -20,10 +20,10 @@ export function AssetList() {
   const [companyId, setCompanyId] = React.useState('');
   const { toast } = useToast();
 
-  const fetchAssets = async (companyId?: string) => {
+  const fetchAssets = React.useCallback(async (filterCompanyId?: string) => {
     try {
       setLoading(true);
-      const url = `/api/assets${companyId ? `?companyId=${companyId}` : ''}`;
+      const url = `/api/assets${filterCompanyId ? `?companyId=${filterCompanyId}` : ''}`;
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -41,11 +41,20 @@ export function AssetList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  // Expose the refresh function globally
+  React.useEffect(() => {
+    window.refreshAssets = () => fetchAssets(companyId);
+  }, [fetchAssets, companyId]);
 
   React.useEffect(() => {
     fetchAssets();
-  }, []);
+    return () => {
+      // Cleanup
+      delete window.refreshAssets;
+    };
+  }, [fetchAssets]);
 
   const handleFilter = (e: React.FormEvent) => {
     e.preventDefault();
